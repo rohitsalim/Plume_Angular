@@ -1,0 +1,44 @@
+<!doctype html>
+<html ng-app="Facebook">
+  <head>
+    <script src="http://code.angularjs.org/angular-1.0.1.js"></script>
+	<script src="http://code.angularjs.org/angular-resource-1.0.1.js"></script>
+    
+  </head>
+  <body>
+	<script>
+		angular.module('Facebook', ['ngResource']);
+
+		function FacebookCtrl($scope, $resource) {
+			$scope.GraphApi = $resource('https://graph.facebook.com/:id/:action', 			{access_token:'AAACEdEose0cBAMbcHbZCfO18pnDib6zznKjqahhZCnjRbhhZAfY8kh95GRp6A48XFtUbTzfM5HX225DWiGW3IfrF5J5FkGu7zJbxoR45QZDZD',callback:'JSON_CALLBACK'},
+			{
+				get:{method:'JSONP'},
+				query:{method:'JSONP', isArray:true}
+			});
+			$scope.doLoad = function () {
+				$scope.me = $scope.GraphApi.get({id:'madhav.bhagat',action:''});
+			}
+			$scope.getFriends = function() {
+				$scope.GraphApi.get({id:'madhav.bhagat',action:'friends'}, function(data){
+					$scope.friends = data['data'];
+				});
+			}
+		}
+
+
+	</script>
+    <h2>Todo</h2>
+    <div ng-controller="FacebookCtrl">
+		<input type='button' ng-click="doLoad()" value="get user"></input>
+      	<div>{{me}}</div>
+		<div>{{me.name}}</div>
+		<input type='button' ng-click="getFriends()" value="get friends"></input>
+		<input type='text' ng-model="query"></input>
+		<ul>
+			<li ng-repeat='friend in friends|filter:query'>
+				<div><a href="http://facebook.com/{{friend.id}}">{{friend.name}}</a></div>
+			</li>
+		</ul>
+    </div>
+  </body>
+</html>
